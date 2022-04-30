@@ -23,7 +23,8 @@ public class BookController {
                 .build();
         List<BookDto> bookDtoList = new ArrayList<>();
 
-        bookDtoList.add(bookDto);
+        bookDtoList.add(bookDto1);
+        bookDtoList.add(bookDto2);
 
         return ResponseEntity.ok(bookDtoList);
 
