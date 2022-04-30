@@ -1,31 +1,25 @@
-pipeline {
-    agent any
+node {
+  try{
+    stage 'checkout project'
+    checkout scm
 
-    tools {
-        // Install the Maven version configured as "M3" and add it to the path.
-        maven "M3"
-    }
+    stage 'check env'
+    sh "mvn -v"
+    sh "java -version"
 
-    stages {
-        stage('Build') {
-            steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/jglick/simple-maven-project-with-tests.git'
+    stage 'test'
+    sh "mvn test"
 
-                // Run Maven on a Unix agent.
-                sh "mvn -Dmaven.test.failure.ignore=false clean package"
+    stage 'package'
+    sh "mvn package"
 
-                // To run Maven on a Windows agent, use
-                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
-            }
+    stage 'report'
+    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
 
-            post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
-                }
-            }
-        }
-    }
+    stage 'Artifact'
+    step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
+
+  }catch(e){
+    throw e;
+  }
+}
