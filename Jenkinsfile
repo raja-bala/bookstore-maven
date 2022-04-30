@@ -30,7 +30,7 @@ pipeline {
                 steps {
                   dir("${WORKSPACE}"){
                           sh '''
-                              git push heroku HEAD:master
+                              git push https://git.heroku.com/book-store-maven.git HEAD:master
                               '''
                       }
                 }
