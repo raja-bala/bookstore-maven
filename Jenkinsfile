@@ -1,25 +1,28 @@
-node {
-  try{
-    stage 'checkout project'
-    checkout scm
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.3.9'
+        jdk 'jdk11'
+    }
+    stages {
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
+            }
+        }
 
-    stage 'check env'
-    sh "mvn -v"
-    sh "java -version"
-
-    stage 'test'
-    sh "mvn test"
-
-    stage 'package'
-    sh "mvn package"
-
-    stage 'report'
-    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-
-    stage 'Artifact'
-    step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
-
-  }catch(e){
-    throw e;
-  }
+        stage ('Build') {
+            steps {
+                sh 'mvn -Dmaven.test.failure.ignore=false install'
+            }
+            post {
+                success {
+                    junit 'target/surefire-reports/**/*.xml'
+                }
+            }
+        }
+    }
 }
