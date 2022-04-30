@@ -30,7 +30,7 @@ pipeline {
                 steps {
                   dir("${WORKSPACE}"){
                           sh '''
-                              git push heroku master
+                              git push heroku HEAD:master
                               '''
                       }
                 }
