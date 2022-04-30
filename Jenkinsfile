@@ -26,5 +26,14 @@ pipeline {
                     }
                 }
             }
+            stage('Deploy') {
+                steps {
+                  dir("${WORKSPACE}"){
+                          sh '''
+                              git push heroku master
+                              '''
+                      }
+                }
+            }
         }
 }
