@@ -1,17 +1,17 @@
 spring:
   datasource:
-    url: jdbc:h2:file:~/inputdb;MODE=MYSQL
+    url: jdbc:h2:mem:testdb;MODE=MYSQL
     username: sa
     password:
     driverClassName: org.h2.Driver
   flyway:
     enabled: true
-    url: jdbc:h2:file:~/inputdb;MODE=MYSQL
+    url: jdbc:h2:mem:testdb;MODE=MYSQL
     user: sa
     password:
     baseline-on-migrate: true
     validate-on-migrate: false
     locations: classpath:db/migration
-    schemas: inputdb
+    schemas: testdb
 server:
   port: ${PORT:8080}
