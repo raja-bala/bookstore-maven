@@ -1,6 +1,7 @@
 package com.wecode.bookstoremaven.controller;
 
 import com.wecode.bookstoremaven.dto.BookDto;
+import com.wecode.bookstoremaven.service.BookService;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,20 +14,17 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/")
 public class BookController {
+
+    private final BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @GetMapping("books")
     public ResponseEntity<List<BookDto>> getBooks() {
-        BookDto bookDto1 = BookDto.builder()
-                .title("My first Book-changed")
-                .build();
-        BookDto bookDto2 = BookDto.builder()
-                .title("My second Book-changed")
-                .build();
-        List<BookDto> bookDtoList = new ArrayList<>();
-
-        bookDtoList.add(bookDto1);
-        bookDtoList.add(bookDto2);
-
-        return ResponseEntity.ok(bookDtoList);
+        List<BookDto> books = bookService.getBooks();
+        return ResponseEntity.ok(books);
 
     }
 }
