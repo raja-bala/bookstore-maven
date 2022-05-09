@@ -2,6 +2,7 @@ package com.wecode.bookstoremaven.model;
 
 import com.sun.istack.NotNull;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Builder
+@Data
 public class Book {
     public Book() {
     }
