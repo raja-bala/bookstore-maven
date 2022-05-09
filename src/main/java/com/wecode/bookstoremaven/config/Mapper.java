@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.modelmapper.ModelMapper;
 
 @Configuration
-public class ProjectConfig {
+public class Mapper {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
