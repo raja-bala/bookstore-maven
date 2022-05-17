@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
@@ -29,10 +30,7 @@ public class BookControllerTest {
 
     @BeforeEach
     void setMockOutput() {
-        List<BookDto> bookDtos = new ArrayList<>();
-        BookDto bookDto = getBookDto();
-        bookDtos.add(bookDto);
-        when(bookService.getBooks()).thenReturn(bookDtos);
+
 
 
     }
@@ -47,7 +45,24 @@ public class BookControllerTest {
     }
     @Test
     void shouldReturnBookDtoListWhenGetBooksCalled() {
+        List<BookDto> bookDtos = new ArrayList<>();
+        BookDto bookDto = getBookDto();
+        bookDtos.add(bookDto);
+        when(bookService.getBooks()).thenReturn(bookDtos);
+
         ResponseEntity<List<BookDto>> books = bookController.getBooks();
+        assertThat(books.getBody()).isNotNull();
+        assertThat(books.getBody().size()).isEqualTo(1);
+
+    }
+    @Test
+    void shouldReturnBookDtoListWhenGetBooksByTitleCalled() {
+        List<BookDto> bookDtos = new ArrayList<>();
+        BookDto bookDto = getBookDto();
+        bookDtos.add(bookDto);
+        when(bookService.getBooksByTitle(anyString())).thenReturn(bookDtos);
+
+        ResponseEntity<List<BookDto>> books = bookController.getBooksByTitle("test title");
         assertThat(books.getBody()).isNotNull();
         assertThat(books.getBody().size()).isEqualTo(1);
 

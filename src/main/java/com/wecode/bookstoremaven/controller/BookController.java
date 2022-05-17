@@ -5,6 +5,7 @@ import com.wecode.bookstoremaven.service.BookService;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,12 @@ public class BookController {
     public ResponseEntity<List<BookDto>> getBooks() {
         List<BookDto> books = bookService.getBooks();
         return ResponseEntity.ok(books);
+
+    }
+    @GetMapping("books/{title}")
+    public ResponseEntity<List<BookDto>> getBooksByTitle(@PathVariable("title") String title) {
+        List<BookDto> booksByTitle = bookService.getBooksByTitle(title);
+        return ResponseEntity.ok(booksByTitle);
 
     }
 }
