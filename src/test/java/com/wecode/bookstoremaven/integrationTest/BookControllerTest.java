@@ -1,14 +1,21 @@
 package com.wecode.bookstoremaven.integrationTest;
 
 import com.wecode.bookstoremaven.BookstoreMavenApplication;
+import com.wecode.bookstoremaven.config.JwtUtil;
 import com.wecode.bookstoremaven.dto.BookDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = BookstoreMavenApplication.class,
 webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -21,10 +28,32 @@ public class BookControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    void setUpHeader() {
+        String token = jwtUtil.generateToken(new User(
+                "peter@gmail.com",
+                passwordEncoder.encode("password"),
+                new ArrayList<>()
+
+        ));
+
+        testRestTemplate.getRestTemplate().setInterceptors(
+                Collections.singletonList((request,body, exection)->{
+                    request.getHeaders()
+                            .add("Authorization", "Bearer " + token);
+                    return exection.execute(request, body);
+        })
+        );
+    }
     @Test
     @Sql(scripts = {"classpath:InsertInitialBookRecordForTest.sql"})
     void shouldReturnBookWhenBookApiCalled() {
-
+        setUpHeader();
        BookDto[] listOfBooks = testRestTemplate.getForObject("http://localhost:" + port +"/api/v1/books", BookDto[].class);
        assertThat(listOfBooks).isNotNull();
        assertThat(listOfBooks.length).isEqualTo(2);
@@ -33,7 +62,7 @@ public class BookControllerTest {
     @Test
     @Sql(scripts = {"classpath:InsertInitialBookRecordForTest.sql"})
     void shouldReturnBookWhenBookApiCalledDuplicatedTest() {
-
+        setUpHeader();
         BookDto[] listOfBooks = testRestTemplate.getForObject("http://localhost:" + port +"/api/v1/books", BookDto[].class);
         assertThat(listOfBooks).isNotNull();
         assertThat(listOfBooks.length).isEqualTo(2);
@@ -42,7 +71,7 @@ public class BookControllerTest {
     @Test
     @Sql(scripts = {"classpath:InsertInitialBookRecordForTest.sql"})
     void shouldReturnBookWhenBookApiCalledWithTestTitle() {
-
+        setUpHeader();
         BookDto[] listOfBooks = testRestTemplate.getForObject("http://localhost:" + port +"/api/v1/books/Test Title1", BookDto[].class);
         assertThat(listOfBooks).isNotNull();
         assertThat(listOfBooks.length).isEqualTo(1);
